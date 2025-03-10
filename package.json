@@ -1,0 +1,60 @@
+{
+  "name": "zteradb",
+  "version": "1.0.0",
+  "description": "ZTeraDB is a client library for Node.js development, providing classes to interact with ZTeraDB both in Node.js environments and web browsers.",
+  "main": "src/index.js",
+  "module": "src/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./src/index.mjs",
+      "require": "./src/index.js"
+    },
+    "./query": {
+      "import": "./src/lib/zteradb-query.mjs",
+      "require": "./src/lib/zteradb-query.js"
+    },
+    "./filter-conditions": {
+      "import": "./src/lib/zteradb-filter-conditions-functions.mjs",
+      "require": "./src/lib/zteradb-filter-conditions-functions.js"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "node src/index.js"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
+  "keywords": [
+    "ZTeraDB",
+    "ZTeraDB Client"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zteradb/zteradb-nodejs.git"
+  },
+  "author": "ZTeraDB",
+  "license": "ZTeraDB",
+  "homepage": "https://zteradb.com",
+  "bugs": {
+    "url": "https://github.com/zteradb/zteradb-nodejs/issues"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "mocha": "^11.0.1"
+  },
+  "dependencies": {
+    "buffer-pack": "^0.0.3",
+    "meta-buffer-pack": "^2.0.4",
+    "net": "latest",
+    "struct": "^0.0.12",
+    "typescript": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
