@@ -663,7 +663,7 @@ class ZTeraDBConnectionManager {
   }
 
   async createNewConnection() {
-    const connection = new ZTeraDBConnect(this.clientAuth, this.host, this.port);
+    const connection = new ZTeraDBConnect(this.host, this.port, this.clientAuth);
 
     const serverAuth = await connection.authenticate();
     if (serverAuth && serverAuth.access_token) {
@@ -827,13 +827,14 @@ class ZTeraDBConnection {
    * 
    * @async
    * @param {ZTeraDBQuery} query - The ZTeraDB query string to be executed.
-   * @returns {AsyncIterableIterator<Object>} - An async iterable that yields query results.
+   * @returns {Promise<Object>} - An async iterable that yields query results.
+   * @returns {Promise<AsyncIterableIterator<Object>>} - An async iterable that yields query results.
    * 
    * @throws {Error} - If there is any issue with obtaining a connection, executing the query, or retrieving the results.
    */
   async run(query) {
     if (!query instanceof ZTeraDBQuery) {
-      throw new ZTeraDBError('Invalid Query', ResponseType.QUERY_ERROR, "Query must be an instance of ZTeraDBQuery.");
+      Promise.reject(new ZTeraDBError('Invalid Query', ResponseType.QUERY_ERROR, "'query' must be an instance of ZTeraDBQuery."));
     }
 
     // Obtain a database connection from the connection manager
@@ -850,7 +851,7 @@ class ZTeraDBConnection {
       const { value, _ } = await response.next();
 
       // Return query result
-      return value;
+      return Promise.resolve(value);
     }
     // Return the query result
     else {

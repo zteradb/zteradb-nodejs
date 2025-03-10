@@ -48,19 +48,23 @@ const ZTERADB_CONFIG = JSON.parse(process.env.ZTERADB_CONFIG);
 // Establish connection with ZTeraDB server
 const connection = ZTeraDBConnect(ZTERADB_CONFIG, "db1.zteradb.com", 7777);
 
-// Prepare select query
-const query = ZTeraDBQuery("user").select();
+async function main() {
+  // Prepare select query
+  const query = ZTeraDBQuery("user").select();
 
-// Run the query
-const result = connection.run(query);
+  // Run the query
+  const result = await connection.run(query);
 
-// Iterate the result
-for await (const row of result) {
-  console.log("Query result: ", row);
+  // Iterate the result
+  for await (const row of result) {
+    console.log("Query result: ", row);
+  }
+
+  // Close the connection
+  await connection.close();
 }
 
-// Close the connection
-connection.close();
+main();
 
 ```
 
