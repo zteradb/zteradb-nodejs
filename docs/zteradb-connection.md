@@ -1,117 +1,156 @@
-# ZTeraDB Connection
+---
+sidebar_position: 3
+---
 
-### `ZTeraDBConnection(ZTeraDBConfig: object, host: string, port: number)`
+# 🔌 Connection
 
-- **ZTeraDBConfig**: `Object`  
-  The configuration object for ZTeraDB. [Click here](./config) for more details.
-
-- **host**: `string`  
-  The hostname of the ZTeraDB server instance.  
-  **Example**: `"db.zteradb.com"`, `"192.168.1.1"`, `"custom.host.com"`
-
-- **port**: `number`  
-  The port number for the ZTeraDB server instance.  
-  **Example**: `7777`, `1234`, or any custom port number.
-
-## Overview
-
-This constructor initializes a new `ZTeraDBConnection` instance by providing the necessary ZTeraDB configuration, host, and port.
-
-`ZTeraDBConnection` is a class that abstracts all the complexities of interacting with a ZTeraDB instance, allowing developers to focus solely on running queries and closing the connection. It includes the following features:
-
-1. **Client Authentication**: Automatically handles secure authentication between the client and the ZTeraDB server using token-based mechanisms.
-
-2. **Connection Management**: Manages individual and pooled connections, including retries, timeouts, and error management, ensuring stable communication without developer intervention.
-
-3. **Request Handling**: Automatically handles sending and receiving data (queries and results) to/from the ZTeraDB server over TCP sockets.
-
-4. **Query Execution**: Developers can execute queries by simply using the `ZTeraDBConnection.run(ZTeraDBQuery)` method, passing in a `ZTeraDBQuery` object, without needing to manage the connection or buffering.
-
-5. **Error Handling**: Built-in robust error handling with custom exceptions, covering authentication issues and general connection errors, with no need for the developer to manage these errors.
-
-6. **Connection Pooling**: Connection pooling is handled automatically to ensure that the required number of connections are available for requests, without overloading the server.
-
-After initializing the `ZTeraDBConnection` instance, developers can simply execute queries using the `ZTeraDBConnection.run(ZTeraDBQuery)` method and close the connection with `ZTeraDBConnection.close()`.
-
-If the connection is not explicitly closed, it will be automatically terminated when the process initiated by the developer ends.
-
-
-## Syntax
-```js
-  // For more details about the configuration,
-  // please refer to the `ZTeraDB Configuration` section.
-  import ZTERADB_CONFIG from "./config";
-
-  // Open a connection
-  const connection = await ZTeraDBConnection(
-    ZTERADB_CONFIG: object,
-    "host address": string,
-    "port number": number
-  );
-
-  // Close the connection
-  await connection.close()
-```
-
-## Methods
+This guide explains how to establish, manage, and close connections to the ZTeraDB Server using the core `ZTeraDBConnection` client engine.
 
 ---
 
-### `run(query: ZTeraDBQuery)`
- - **Description**: It executes the query on the ZTeraDB database instance and returns an asynchronous generator containing the query results. If an error occurs, it will return the error instead.
- - **Parameters**:
-  - **query**: (ZTeraDBQuery) The ZTeraDBQuery instance.
-    - **example**: Below query will fetch all records from product schema.
-      ```js
-        const query = new ZTeraDBQuery("product")
-                        .select();
-        const result = connection.run(query); // The result will be async generator.
-      ```
-      [Detailed Example](#example)
+## 🔌 What is ZTeraDBConnection?
 
-  - **Returns**: async generator
+The `ZTeraDBConnection` class serves as the primary network broker for your application. It abstracts low-level socket management and handles:
 
-  - **Throws**:
-    - Throws an error if any error occurred while running the query.
+* 🔐 **Secure Handshakes:** Opens and manages TCP/TLS streams directly to the server.
+* 🎫 **Session Auth:** Handles initial token validations using your configuration keys.
+* 🚀 **High-Throughput Streaming:** Executes ZQL payloads and delivers efficient buffer streams.
+* 🔄 **Socket Reuse:** Integrates directly with client-side connection pooling layers.
 
-### `close()`
+---
 
-- **Description**: It closes all active connections to the ZTeraDB server. If the developer does not explicitly close the connection, it will be automatically terminated when the process initiated by the developer ends.
+## 🧠 Architectural Overview
 
-- **Returns**: (boolean) `true` if the connection is successfully closed; an error if any issue occurs while closing the connection.
+ZTeraDB decouples your application from the underlying target systems by acting as a single database proxy router:
 
-- **Throws**:
-    - Throws an error if any error occurred while closing the connection.
+```mermaid
+graph LR
+    %% Primary Core Nodes
+    App["Your NodeJS App"]
+    Client["ZTeraDB Client"]
+    Server["ZTeraDB Server"]
+    DB["MySQL / PostgreSQL / MSSQL / ..."]
 
-- **example**: [Click here](#example)
+    %% Network / Protocol Intermediaries
+    SOCKET["TCP Socket Layer<br />⚡ TLS Supported"]
+    ROUTING["Multiplexed Routing<br />🔀 Load Balanced"]
 
+    %% Pipeline Execution Flow
+    App --> Client
+    Client --> SOCKET --> Server
+    Server --> ROUTING --> DB
 
-## Example:
+    %% Component Styles (High Contrast, Bold Borders)
+    style App fill:#ffffff,stroke:#0f172a,stroke-width:2.5px,color:#0f172a,font-weight:bold
+    style Client fill:#eff6ff,stroke:#2563eb,stroke-width:2.5px,color:#1e40af,font-weight:bold
+    style Server fill:#f5f3ff,stroke:#7c3aed,stroke-width:2.5px,color:#5b21b6,font-weight:bold
+    style DB fill:#ecfdf5,stroke:#059669,stroke-width:2.5px,color:#065f46,font-weight:bold
 
-Below is end to end example for getting all users from the user schema
-```js
-// Import ZTeraDBConnection, ZTeraDBQuery classes 
-import {ZTeraDBConnection, ZTeraDBQuery} from 'zteradb';
+    %% Protocol Styles (Sleek, De-emphasized Data-In-Transit Nodes)
+    style SOCKET fill:#f8fafc,stroke:#e2e8f0,stroke-width:1px,color:#475569,font-style:italic
+    style ROUTING fill:#f8fafc,stroke:#e2e8f0,stroke-width:1px,color:#475569,font-style:italic
+```
 
-// Get ZTeraDB Configuration from .env.
-const ZTERADB_CONFIG = JSON.parse(process.env.ZTERADB_CONFIG);
+---
 
-// Establish connection with ZTeraDB server
-const connection = await ZTeraDBConnection(ZTERADB_CONFIG, "db1.zteradb.com", 7777);
+## 📦 Initializing a Connection
 
-// Prepare select query
-const query = ZTeraDBQuery("user")
-              .select();
+The connection constructor accepts your target infrastructure endpoints along with your initialized configuration layout.
 
-// Run the query
-const result = connection.run(query);
+```javascript
+import { ZTeraDBConnection, ZTeraDBConfig } from "zteradb/client"; // Or using commonJS: const { ZTeraDBConnection, ZTeraDBConfig } = require('zteradb/client');
 
-// Iterate the result
+const config = new ZTeraDBConfig(JSON.parse(process.env.ZTERADB_CONFIG));
+
+// Signature format: ZTeraDBConnection(ZTeraDBConfig config, string host, int port)
+const connection = new ZTeraDBConnection(
+  config,                         // ZTeraDBConfig object
+  "Your ZTeraDB HOST",            // Host
+  "Your ZTeraDB PORT Number"      // Port
+);
+```
+
+---
+
+## 🔑 Constructor Parameters
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `host` | `string` | **Yes** | The remote endpoint or network IP address allocated to your cluster runtime. *(e.g., `Your ZTeraDB HOST`)* |
+| `port` | `int` | **Yes** | The active TCP entry port assigned to your instance. Defaults universally to `Your ZTeraDB PORT`. |
+| `config` | `ZTeraDBConfig` | **Yes** | An initialized, valid configuration matrix containing your authentication profile. |
+
+---
+
+## 🎛 Client Methods
+
+### 1. `run(ZTeraDBQuery query): iterable`
+Submits an abstracted ZQL query framework directly to the cluster infrastructure socket.
+
+```javascript
+const query = new ZTeraDBQuery('user').select();
+const result = await db.run(query);
+```
+
+---
+
+* **Memory Optimization:** This method yields an **iterable data stream**. Rows are parsed as they arrive over the wire rather than loading the entire payload block into memory at once. It is highly recommended to loop through datasets via `foreach()`.
+
+### 2. `close(): void`
+Closes active streaming connections and frees up network socket descriptors on the host device.
+
+```javascript
+await db->close();
+```
+
+---
+
+> 💡 **Serverless Tip:** Always explicitly invoke `close()` at the conclusion of your script, especially inside ephemeral microservice architectures (like AWS Lambda or Bref) to prevent connection leaks.
+
+---
+
+## 🧪 Complete Implementation Blueprint
+
+```javascript
+// Import required classes
+import { ZTeraDBConfig, ZTeraDBConnection, ZTeraDBQuery } from "zteradb/client"; // Or using commonJS: const { ZTeraDBConfig, ZTeraDBConnection, ZTeraDBQuery } = require('zteradb/client');
+
+// Set configuration
+const config = new ZTeraDBConfig(JSON.parse(process.env.ZTERADB_CONFIG));
+
+// 
+const db = new ZTeraDBConnection(config, "Your ZTeraDB HOST", "Your ZTeraDB Port number");
+
+// Select all records from user schema
+const query = new ZTeraDBQuery("user").select();
+
+// Run and wait for the query response
+const result = await db.run(query);
+
+// Iterate the query result
 for await (const row of result) {
-  console.log("Query result: ", row);
+  console.log(row);
 }
 
-// Close the connection
-await connection.close();
-
+// Close the ZTeraDB connection
+await db.close();
 ```
+
+---
+
+## ⚠️ Troubleshooting Connection Failures
+
+* ❌ **Socket Exception / Timeout Errors:** Usually points to incorrect network routing or network access controls blocking access.
+  * *Fix:* Double-check your host endpoint address and make sure outbound connections on port `7777` are permitted by your firewall.
+
+* ❌ **Authentication Rejections:** The client can reach the server but your security handshake fails.
+  * *Fix:* Ensure all required keys (`client_key`, `access_key`, `secret_key`, and `database_id`) are mapped properly through your `.env` loader.
+
+* ❌ **Resource Leakage Warning:** NodeJS warning notifications or high system socket metrics.
+  * *Fix:* Wrap execution processes inside a structural `try...finally` block to make sure `db->close()` runs regardless of execution errors.
+
+---
+
+### 🎉 Next Step
+Now that your connection pipeline is established, learn how to build complex data lookups:
+👉 **[ZTeraDB Query Guide](./zteradb-query.md)**

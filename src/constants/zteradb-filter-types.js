@@ -1,10 +1,9 @@
 /**
- * @file filter-conditions.js
+ * @file constants/zteradb-filter-types.js
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- *
- * Licensed under the ZTeraDB License. See LICENSE file for details.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB FilterTypes Enum
+ * --------------------------------------------------------------------------
  * 
  * @description This file contains the `FilterTypes` frozen object for various filter types
  * used in constructing ZTeraDB queries for advanced filtering operations.
@@ -13,33 +12,48 @@
  *   const inFilter = FilterTypes.IN;
  * 
  * @object FilterTypes
+ * @package zteradb.constants
  * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
+ * @version 2.0
  * @license [ZTeraDB]
  * @see [https://zteradb.com/licence]
  */
 
 
+/**
+ * Enumeration mapping for core relational, mathematical, and logical query operators.
+ * This object is frozen to enforce structural integrity across the evaluation lifecycle.
+ * * @constant
+ * @type {Readonly<Object<string, string>>}
+ */
 const FilterTypes = Object.freeze({
-  AND: "&&",                // AND filter type for or operation in sql query
-  OR: "||",                 // OR filter type for and operation in sql query
-  EQUAL: "=",               // equal filter type for equal operation in sql query
-  ADD: "+",                 // addition filter type for addition operation in sql query
-  SUB: "-",                 // subtract filter type for subtract operation in sql query
-  MUL: "*",                 // multiplication filter type for multiplication operation in sql query
-  DIV: "/",                 // divide filter type for divide operation in sql query
-  MOD: "%",                 // modulo filter type for modulo operation in sql query
-  GT: ">",                  // greater than filter type for greater than operation in sql query
-  GTE: ">=",                // greater than or equal filter type for greater than or equal operation in sql query
-  LT: "<",                  // less than filter type for less than operation in sql query
-  LTE: "<=",                // less than or equal filter type for less than or equal operation in sql query
-  CONTAINS: "%%",           // like filter type for string like operation in sql query
-  ICONTAINS: "i%%",         // case-insensitive like filter type for string case-insensitive like operation in sql query
-  STARTSWITH: "^%%",        // starts with filter type for string starts with operation in sql query
-  ISTARTSWITH: "^i%%",      // starts with filter type for string starts with operation in sql query
-  ENDSWITH: "%%$",         // ends with filter type for string ends with operation in sql query
-  IENDSWITH: "i%%$",        // ends with filter type for string ends with operation in sql query
-  IN: "IN",                 // in filter type for schema field in operation in sql query
+  // Logical Evaluation Gates
+  AND: "&&",                // Logical AND conjunction operator for nested query intersections
+  OR: "||",                 // Logical OR disjunction operator for nested query unions
+
+  // Relational Comparison Operators
+  EQUAL: "=",               // Strict scalar equality comparison operator
+  GT: ">",                  // Strict greater-than relational operator
+  GTE: ">=",                // Greater-than-or-equal-to relational boundary operator
+  LT: "<",                  // Strict less-than relational operator
+  LTE: "<=",                // Less-than-or-equal-to relational boundary operator
+  IN: "IN",                 // Explicit set inclusion boundary validation operator
+
+  // Mathematical Functional Operators
+  ADD: "+",                 // Arithmetic addition computational token
+  SUB: "-",                 // Arithmetic subtraction computational token
+  MUL: "*",                 // Arithmetic multiplication computational token
+  DIV: "/",                 // Arithmetic division computational token
+  MOD: "%",                 // Remainder arithmetic modulo computational token
+
+  // Advanced Pattern / Substring Extraction Filters
+  CONTAINS: "%%",           // Case-sensitive wild-card pattern matching substring filter
+  ICONTAINS: "i%%",         // Case-insensitive wild-card pattern matching substring filter
+  STARTSWITH: "^%%",        // Case-sensitive prefix pattern matching positional filter
+  ISTARTSWITH: "^i%%",      // Case-insensitive prefix pattern matching positional filter
+  ENDSWITH: "%%$",         // Case-sensitive suffix pattern matching positional filter
+  IENDSWITH: "i%%$",        // Case-insensitive suffix pattern matching positional filter
 });
 
-module.exports = FilterTypes ;
+// Export structural lookup table via CommonJS specification
+module.exports = FilterTypes;

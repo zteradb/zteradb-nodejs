@@ -1,10 +1,9 @@
 /**
- * @file common.js
+ * @file helper/zteradb-common.mjs
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB Common functions
+ * --------------------------------------------------------------------------
  * 
  * @description This file exports following common functions user by ZTeraDB client module.
  *               - delay: adds delay in the asynchronous function.
@@ -13,10 +12,11 @@
  * @dependencies 
  *  - crypto: for generating SHA256 hash
  *          
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @package     zteradb.helper
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 

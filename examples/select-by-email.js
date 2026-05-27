@@ -1,76 +1,101 @@
 /**
  * @file select-user-by-email.js
- * @description This file contains the logic for selecting and retrieving user data from the ZTeraDB database.
- * It uses ZTeraDB client to connect to the database, run a SELECT query on the "user" table, and logs the user data.
- * The database connection details (host and port) are retrieved from environment variables.
  * 
- * @requires ZTeraDBConnection - To create a connection to the ZTeraDB database.
- * @requires ZTeraDBQuery - To build and execute queries on the ZTeraDB database.
- * @requires ZTeraDBConfig - Configuration settings for the ZTeraDB connection.
+ * --------------------------------------------------------------------------
+ * ZTeraDB Client - User Query Retrieval Service
+ * --------------------------------------------------------------------------
  * 
+ * @description
+ * Validates running cluster bounds, instantiates an abstract 
+ * connection pipeline, constructs a targeted selection criteria query, and 
+ * efficiently streams user records via an asynchronous data cursor.
+ *
  * @dependencies
- * - zteradb: A client library for interacting with ZTeraDB.
- * - environment variables for ZTearDB connection settings (ZTERADB_HOST, ZTERADB_PORT, ZTeraDBConfig).
- * 
- * @example
- * selectusers(); // Fetches and logs all user data from the "user" table.
- * 
- * @version 1.0.0
- * @author [ZTeraDB] <dev@zteradb.com>
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
- * 
+ * - ./config.js
+ * - zteradb
+ *
+ * @package     zteradb.examples
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
-// Import necessary modules from ZTeraDB client
-import ZTeraDBConfig from "./config.js";
-import { ZTeraDBConnection, ZTeraDBQuery } from "zteradb";
+// Import config via CommonJS
+const ZTeraDBConfig = require("./config.js");
 
-// Get ZTeraDB connection details from environment variables
-const ZTeraDBHost = process.env.ZTERADB_HOST;
-const ZTeraDBPort = process.env.ZTERADB_PORT;
+// Import ZTeraDBConnection, ZTeraDBQuery from ZTeraDB client via CommonJS destructuring
+const { ZTeraDBConnection, ZTeraDBQuery } = require("zteradb");
 
 /**
- * Function to validate if the required environment variables are set
+ * Validates infrastructure layer variables.
+ * @param {string} host - Database target cluster address.
+ * @param {string|number} port - Database operational port assignment.
+ * @throws {TypeError} If operational boundaries are missing or invalid.
  */
-const validateEnvVariables = () => {
-  if (!ZTeraDBHost || !ZTeraDBPort) {
-    throw new Error("Missing ZTeraDB host or port configuration in environment variables.");
-  }
-};
-
-/**
- * Function to fetch and log user data from the database
- */
-async function fetchAllUsers() {
-  // Validate that the required environment variables are present
-  validateEnvVariables();
-
-  // Create a ZTeraDB connection
-  const connection = new ZTeraDBConnection(ZTeraDBHost, ZTeraDBPort, ZTeraDBConfig);
-
-  try {
-    // Construct the SELECT query for users
-    const userQuery = new ZTeraDBQuery("user")
-      .select() // SELECT query to fetch user data
-      .filter({email: "john.doe@example.com"});
-
-    // Execute the query and get the result
-    const userResult = await connection.run(userQuery);
-
-    // Iterate through the result and log each user's data
-    for await (const userData of userResult) {
-      console.log(userData); // Example output: { email: 'john.doe@example.com', password: 'hashed_password', status: true, id: 1 }
-    }
-  } catch (error) {
-    // Log and rethrow the error for further handling
-    console.error("Error during user retrieval:", error);
-    throw error;
-  } finally {
-    // Ensure the connection is closed after the operation
-    connection.close();
+function validateNetworkConfig(host, port) {
+  if (!host || !port) {
+    throw new TypeError(
+      "Deployment Fault: ZTERADB_HOST or ZTERADB_PORT environment configuration is missing."
+    );
   }
 }
 
-// Call the function to fetch users
-fetchAllUsers();
+/**
+ * Isolates and evaluates targeted collection constraints dynamically.
+ * @param {ZTeraDBConnection} connection - Active cluster pipe abstraction.
+ * @param {string} targetEmail - Query evaluation target criteria parameter.
+ * @returns {Promise<void>} Resolves when the async result stream has finished processing.
+ */
+async function fetchUserRecordsByEmail(connection, targetEmail) {
+  const userQuery = new ZTeraDBQuery("user")
+    .select()
+    .filter({ email: targetEmail });
+
+  const userResult = await connection.run(userQuery);
+
+  console.log(`[INFO] Streaming matching dataset metrics for parameter: [${targetEmail}]`);
+
+  // Asynchronously iterate across streaming transaction chunks safely
+  for await (const userData of userResult) {
+    console.log("[RECORD] ->", userData);
+  }
+}
+
+/**
+ * Pipeline Orchestration Interface. Handles runtime context lifecycle operations 
+ * and structural resource cleanup bounds.
+ */
+async function main() {
+  const host = process.env.ZTERADB_HOST;
+  const port = process.env.ZTERADB_PORT;
+  const targetEmail = "john.doe@example.com";
+  
+  let connection = null;
+
+  try {
+    validateNetworkConfig(host, port);
+
+    connection = new ZTeraDBConnection(host, port, ZTeraDBConfig);
+    console.log("[INFO] Synchronization layer initialized. Querying index fields...");
+
+    await fetchUserRecordsByEmail(connection, targetEmail);
+    console.log("[SUCCESS] Stream iterator finished processing records context successfully.");
+
+  } catch (error) {
+    console.error(`[FATAL] Query transaction loop crashed inside selector runner:`, error.message);
+    process.exitCode = 1;
+  } finally {
+    if (connection && typeof connection.close === "function") {
+      try {
+        connection.close();
+        console.log("[INFO] Connection interface resource released safely.");
+      } catch (closeError) {
+        console.error("[ERROR] Failed to tear down underlying connection context:", closeError.message);
+      }
+    }
+  }
+}
+
+// Initialize Query Runner Process
+main();

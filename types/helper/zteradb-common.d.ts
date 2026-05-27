@@ -1,16 +1,42 @@
-export function delay(ms: any): Promise<any>;
 /**
- * Utility function to generate a SHA-256 hash.
+ * @file helper/zteradb-common.d.ts
  *
- * This function takes an input `data`, converts it to a string (if it isn't already), and
- * generates a SHA-256 hash of the data. The result is returned as a hexadecimal string.
+ * --------------------------------------------------------------------------
+ * ZTeraDB Common Functions Type Definitions
+ * --------------------------------------------------------------------------
  *
- * @param {any} data - The data to be hashed. This can be any type, but it will be
- *                     converted to a string before hashing.
- * @returns {string} - The SHA-256 hash of the input data as a hexadecimal string.
+ * @description
+ * This file exports common helper utilities used across the ZTeraDB client module.
+ * - delay: Adds a non-blocking execution pause in asynchronous workflows.
+ * - sha256: Computes a secure SHA-256 hash output string for arbitrary data values.
+ *
+ * @dependencies
+ * - crypto: Native Node.js module used for generating secure hash representations.
  *
  * @example
- * const hash = sha256('myData');
- * console.log(hash); // Outputs the SHA-256 hash of 'myData'
+ * import { delay, sha256 } from './helper/zteradb-common.js';
+ * await delay(1000);
+ * const dataHash = sha256('secure_payload');
+ *
+ * @package     zteradb.helper
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
+ */
+
+/**
+ * Pauses asynchronous code execution for a specific duration.
+ * @param ms - The duration to pause execution in milliseconds.
+ * @returns A promise that resolves after the specified millisecond duration has passed.
+ */
+export function delay(ms: number): Promise<void>;
+
+/**
+ * Utility function to generate a cryptographic SHA-256 hash.
+ * * This function takes an input context, normalizes it to a string string-stream layout,
+ * and compiles a hexadecimal hash output representation.
+ * @param data - The variable target or structure data payload to hash.
+ * @returns The computed SHA-256 checksum represented as a fixed-length hexadecimal string.
  */
 export function sha256(data: any): string;

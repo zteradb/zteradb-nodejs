@@ -1,49 +1,53 @@
 /**
+ * @file index.js (or main export file)
+ * 
+ * --------------------------------------------------------------------------
  * ZTeraDB Client - Module Export File
- * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
- * 
- * @description This module exports the necessary classes for interacting with the ZTeraDB database:
- * - ZTeraDBConnect: Handles database connections.
+ * --------------------------------------------------------------------------
+ *
+ * * @description
+ * This file centralizes and exports the necessary classes, configurations, 
+ * and filter functions used by the ZTeraDB client module.
+ * - ZTeraDBConnection: Handles database connections.
  * - ZTeraDBQuery: Provides methods for building and executing database queries.
- * - ZTEQUAL(field, value): Generates a condition where field equals the provided value.
- * - ZTMUL(values): The values to be multiplied in the filter.
- * - ZTSUB(values): The values to be substracted in the filter.
- * - ZTADD(values): The values to be added in the filter.
- * - ZTDIV(dividend, divisor): The values to be devided in the filter.
- * - ZTMOD(dividend, divisor): The values to be modulo in the filter.
- * - ZTGT(field, value): Generates a condition where field is greater than the provided value.
- * - ZTLT(field, value): Generates a condition where field is less than the provided value.
- * - ZTGTE(field, value): Generates a condition where field is greater than the provided value.
- * - ZTLTE(field, value): Generates a condition where field is less than the provided value.
- * - ZTIN(field, values): Generates a condition where field is within the list of provided values.
- * - ZTAND(condition1, condition2): Combines two conditions with the logical AND operator.
- * - ZTOR(condition1, condition2): Combines two conditions with the logical OR operator.
- * - ZTCONTAINS(field, value): Generates a condition where the value occurs anywhere in the schema field.
- * - ZTICONTAINS(field, value): Generates a condition where the value case-insensitive occurs anywhere in the schema field.
- * - ZTSTARTSWITH(field, value): Generates a condition where the value starts within the schema field.
- * - ZTISTARTSWITH(field, value): Generates a condition where the value case-insensitive starts within the schema field.
- * - ZTENDSSWITH(field, value): Generates a condition where the value ends within the schema field.
- * - ZTIENDSSWITH(field, value): Generates a condition where the value case-insensitive ends within the schema field.
- * 
- * The goal of this file is to centralize the exports, making it easier to import and use
- * both the connection and query functionalities in other parts of the application.
- * 
- * @module zteradb
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * - ZTeraDBConfig: Standard configuration class for the SDK environment.
+ * - ResponseDataTypes: Constant dictionary mapping response payloads.
+ * - ENVS: Environment profiles configuration helper.
+ * - Sort: Utility definitions for ordering record fields.
+ * - ZTEQUAL: Generates a condition where field equals the provided value.
+ * - ZTADD, ZTSUB, ZTMUL, ZTDIV, ZTMOD: Filter functions for math operations.
+ * - ZTGT, ZTGTE, ZTLT, ZTLTE: Filter functions for value comparison boundaries.
+ * - ZTIN, ZTAND, ZTOR: Logic evaluation and set filter functions.
+ * - ZTCONTAINS, ZTICONTAINS: Substring match filters (Case-sensitive / Case-insensitive).
+ * - ZTSTARTSWITH, ZTISTARTSWITH: Prefix match filters (Case-sensitive / Case-insensitive).
+ * - ZTENDSWITH, ZTIENDSWITH: Suffix match filters (Case-sensitive / Case-insensitive).
+ *
+ * @dependencies 
+ * - @zteradb/client/connection/zteradb-connection
+ * - @zteradb/client/query
+ * - @zteradb/client/constants/zteradb-response-data-types
+ * - @zteradb/client/config/envs
+ * - @zteradb/client/config/zteradb-config
+ * - @zteradb/client/query/zteradb-filter-conditions-functions
+ * - @zteradb/client/helper/zteradb-exception
+ *
+ * @package     zteradb.client
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 // Importing the ZTeraDBConnection class from the 'zteradb-connection.js' file
-const ZTeraDBConnection = require('./lib/zteradb-connection');
+const ZTeraDBConnection = require('@zteradb/client/connection/zteradb-connection');
 
 // Importing the ZTeraDBQuery class from the 'query.js' file
-const { ZTeraDBQuery, Sort } = require("./lib/zteradb-query");
+const ZTeraDBQuery = require("@zteradb/client/query");
+const { Sort } = require("@zteradb/client/query");
+
+const ZTeraDBConfig = require("@zteradb/client/config/zteradb-config");
+const ResponseDataTypes = require("@zteradb/client/constants/zteradb-response-data-types");
+const ENVS = require("@zteradb/client/config/envs");
 
 // Importing the ZTFilterConditions class from the 'filter-conditions-functions.js' file
 const {
@@ -66,7 +70,7 @@ const {
   ZTISTARTSWITH,
   ZTENDSWITH,
   ZTIENDSWITH,
-} = require("./lib/zteradb-filter-conditions-functions");
+} = require("./query/zteradb-filter-conditions-functions");
 
 // Export ZTeraDBException to allow user to get the exception type
 const ZTeraDBException = require("./helper/zteradb-exception");
@@ -74,6 +78,9 @@ const ZTeraDBException = require("./helper/zteradb-exception");
 module.exports = {
   ZTeraDBConnection, // Export ZTeraDBConnection to allow connection functionality to be used elsewhere
   ZTeraDBQuery,   // Export ZTeraDBQuery to allow querying functionality to be used elsewhere
+  ZTeraDBConfig,  // Export ZTeraDBConfig
+  ResponseDataTypes,  // Export ResponseDataTypes to allow the developerto set it from elsewhere
+  ENVS, // Export Envs to allow the developerto set it from elsewhere
   Sort,           // Export Sort to allow sort fields
   ZTeraDBException,
   ZTEQUAL,

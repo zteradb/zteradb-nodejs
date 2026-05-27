@@ -1,76 +1,86 @@
-export = ResponseType;
 /**
- * *
- */
-type ResponseType = number;
-/**
- * @file response-type.js
+ * @file constants/zteradb-response-types.d.ts
  *
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
+ * --------------------------------------------------------------------------
+ * ZTeraDB ResponseType Type Definitions
+ * --------------------------------------------------------------------------
  *
- * Licensed under the ZTeraDB License. See LICENSE file for details.
- *
- * @description Enumeration of response types used for communication with the ZTeraDB service.
- *
- * This object contains predefined constants that represent different types of responses
- * that can be received from the ZTeraDB server. Each response type corresponds to a specific
- * outcome or status of a request, such as whether a connection was successful, an error occurred,
- * or a query was executed successfully.
- *
- * These response types are used in the communication protocol to interpret the server's response
- * to the client’s requests. The client can handle the response accordingly based on the response type.
- *
- * @readonly
- * @enum {number}
- * @property {number} CONNECTED - Response indicating that the connection to the server was successfully established.
- * @property {number} CONNECT_ERROR - Response indicating that there was an error establishing the connection.
- * @property {number} DISCONNECTED - Response indicating that the connection has been terminated or closed.
- * @property {number} DISCONNECT_ERROR - Response indicating that there was an error while attempting to disconnect.
- * @property {number} CLIENT_AUTH_ERROR - Response indicating that authentication of the client has failed.
- * @property {number} QUERY_DATA - Response containing the result data for a database query.
- * @property {number} QUERY_COMPLETE - Response indicating that a query has been completed successfully.
- * @property {number} QUERY_ERROR - Response indicating that there was an error during query execution.
- * @property {number} PONG - Response indicating that a "ping" request has been successfully received (usually for heartbeat or status check).
- * @property {number} PARSE_QUERY_ERROR - Response indicating that there was an error parsing the query.
- * @property {number} NO_ACCESS - Response indicating that the client does not have permission to perform the requested action.
- * @property {number} TOKEN_EXPIRED - Response indicating that the authentication token has expired.
- * @property {number} INVALID_SCHEMA - Response indicating that the requested schema is invalid or does not exist.
- * @property {number} FIELD_ERROR - Response indicating that there was an error related to fields (e.g., missing or invalid fields).
- * @property {number} CREATE_SCHEMA_SUCCESS - Response indicating that schema creation was successful.
- * @property {number} CREATE_SCHEMA_ERROR - Response indicating that there was an error creating the schema.
- * @property {number} PUBLISH_SCHEMA_SUCCESS - Response indicating that schema publication was successful.
- * @property {number} PUBLISH_SCHEMA_ERROR - Response indicating that there was an error publishing the schema.
- * @property {null} NONE - A placeholder for no specific response type.
+ * @description
+ * Enumeration of response types used for communication with the ZTeraDB service.
+ * This declaration file maps the protocol operation status codes returned by the
+ * remote server to verify runtime states and handle data exceptions securely.
  *
  * @example
- *   const isConnected = ServerequestType === ResponseType.CONNECTED;  // To verify client is connected or not
- *          where ServerequestType is response type from the server.
+ * import ResponseType from './constants/zteradb-response-types.js';
+ * const isConnected = ServerequestType === ResponseType.CONNECTED;
  *
- * @object FilterTypes
+ * @package zteradb.constants
  * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
+ * @version 2.0
  * @license [ZTeraDB]
  * @see [https://zteradb.com/licence]
  */
-declare const ResponseType: Readonly<{
-    CONNECTED: 2;
-    CONNECT_ERROR: 1280;
-    DISCONNECTED: 4;
-    DISCONNECT_ERROR: 5;
-    CLIENT_AUTH_ERROR: 6;
-    QUERY_DATA: 7;
-    QUERY_COMPLETE: 1544;
-    QUERY_ERROR: 9;
-    PONG: 16;
-    PARSE_QUERY_ERROR: 256;
-    NO_ACCESS: 17;
-    TOKEN_EXPIRED: 1024;
-    INVALID_SCHEMA: 1025;
-    FIELD_ERROR: 1026;
-    CREATE_SCHEMA_SUCCESS: 513;
-    CREATE_SCHEMA_ERROR: 1281;
-    PUBLISH_SCHEMA_SUCCESS: 514;
-    PUBLISH_SCHEMA_ERROR: 1282;
-    NONE: any;
-}>;
+
+export type ResponseTypeMap = {
+  // =========================================================================
+  // Operational Success States (0x0002 - 0x0202)
+  // =========================================================================
+  /** Explicit null placeholder indicating a fallback or empty operational context (0x0000). */
+  readonly NONE: 0x0000;
+  /** Response indicating that the connection to the server was successfully established (0x0002). */
+  readonly CONNECTED: 0x0002;
+  /** Response containing a localized partial dataset package resulting from an active query (0x0007). */
+  readonly QUERY_DATA: 0x0007;
+  /** Latency heartbeat response validating remote engine availability (0x0010). */
+  readonly PONG: 0x0010;
+  /** Confirms new structural schema compilation completed safely on disk (0x0201). */
+  readonly CREATE_SCHEMA_SUCCESS: 0x0201;
+  /** Confirms schema transition to the public deployment workspace succeeded (0x0202). */
+  readonly PUBLISH_SCHEMA_SUCCESS: 0x0202;
+  /** Signals total result execution completion for the current transaction pipeline (0x0608). */
+  readonly QUERY_COMPLETE: 0x0608;
+
+  // =========================================================================
+  // Client-Side Violations & Request Exceptions (0x0400 - 0x0422)
+  // =========================================================================
+  /** Confirms connection termination or session closure workflow has processed (0x0400). */
+  readonly DISCONNECT: 0x0400;
+  /** Security exception indicating insufficient permissions for the targeted payload (0x0400). */
+  readonly NO_ACCESS: 0x0400;
+  /** Identity exception tracking cryptographic signature or access lifecycle timeouts (0x0401). */
+  readonly TOKEN_EXPIRED: 0x0401;
+  /** Syntax or grammatical compilation error inside the submitted query (0x0420). */
+  readonly QUERY_PARSE_ERROR: 0x0420;
+  /** Indicates targeted database schema reference is malformed or non-existent (0x0421). */
+  readonly INVALID_SCHEMA: 0x0421;
+  /** Structural column error reflecting invalid datatypes or missing properties (0x0422). */
+  readonly FIELD_ERROR: 0x0422;
+
+  // =========================================================================
+  // Infrastructure & Core Engine Fault States (0x0500 - 0x0522)
+  // =========================================================================
+  /** Network exception fired when handshake or socket streaming pipeline fails (0x0500). */
+  readonly CONNECT_ERROR: 0x0500;
+  /** Runtime exception tracked when session channel termination fails (0x0501). */
+  readonly DISCONNECT_ERROR: 0x0501;
+  /** Security exception for rejected keys, secret tokens, or handshake signatures (0x0502). */
+  readonly CLIENT_AUTH_ERROR: 0x0502;
+  /** Operational database engine fault triggered during runtime transaction execution (0x0520). */
+  readonly QUERY_ERROR: 0x0520;
+  /** Structural compilation failure tracking schema creation operations (0x0521). */
+  readonly CREATE_SCHEMA_ERROR: 0x0521;
+  /** Deployment workflow error preventing schema workspace transitions (0x0522). */
+  readonly PUBLISH_SCHEMA_ERROR: 0x0522;
+};
+
+/**
+ * Frozen protocol operation status dictionary mapping remote responses to explicit hexadecimal words.
+ */
+declare const ResponseType: ResponseTypeMap;
+
+/**
+ * Type utility representing any valid ZTeraDB ResponseType code value.
+ */
+export type ResponseType = ResponseTypeMap[keyof ResponseTypeMap];
+
+export default ResponseType;

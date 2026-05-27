@@ -1,73 +1,159 @@
-# ZTeraDB Node.js Client Library
-This is a Node.js client library for interacting with **ZTeraDB**, a platform that allows you to connect to your existing databases and query them using **ZTeraDB Query Language (ZQL)**. The client provides an easy-to-use interface to send queries to ZTeraDB and retrieve results in a standardized format.
+# 📦 Node.js Client
 
-## Table of Contents
+Welcome to the official ZTeraDB Node.js Client documentation. This package implements a performance-optimized, ZQL-first database driver utilizing a raw TCP socket transport layer.
 
-1. [Features](#features)
-2. [Requirements](#requirements)
-3. [Installing](#install)
-4. [Usage](#usage)
-5. [Configuration](./docs/config.md)
-6. [ZTeraDB Connection](./docs/zteradb-connection.md)
-7. [Query](./docs/query.md)
-8. [Filter Conditions](./docs/filter-condition.md)
+---
 
+## 📘 What Is ZTeraDB?
 
-## **Features**
+ZTeraDB allows you to connect to your existing databases (PostgreSQL, MySQL, MSSQL, etc.) through a single, unified platform using **One Unified Query Language (ZQL)**.
 
-- **Connect to Multiple Databases**: Seamlessly interact with your existing databases through ZTeraDB.
-- **ZTeraDB Query Language (ZQL)**: Use a unified query language to query data across different database systems.
-- **Easy Integration**: Easily integrate ZTeraDB into your Node.js application.
-- **Asynchronous Queries**: Support for async/await syntax to handle queries and results asynchronously.
-- **Error Handling**: Comprehensive error handling to help debug and manage database queries.
+## Technical Overview
+This package implements a performance-optimized, ZQL-first Node.js client utilizing a raw TCP socket transport layer.
 
-## **Requirements**
-- This is a Node.js module available through the npm registry.
-Before installing, download and [install Node.js](https://nodejs.org/en/download/). Node.js 18.20.7 or higher is required.
-- If this is a brand new project, make sure to create a package.json first with the [npm init command](https://docs.npmjs.com/creating-a-package-json-file).
+To ensure low-overhead binary framing, the client communicates with the ZTeraDB server using **4-byte big-endian length-prefixed payloads** containing structured JSON data. This underlying transport architecture eliminates HTTP overhead, offering high-throughput query execution directly from your Node.js runtime.
 
-## **Install**
-Run following command to install ZTeraDB client for nodejs.
+---
 
-```js
-// Using npm
-# npm install zteradb --save
+## 🧠 Architecture Overview
 
-// Using yarn
-# yarn add zteradb
+You never connect to your backend databases directly. ZTeraDB handles all connections, cryptographic signing, proxy routing, and query execution securely behind the scenes.
+
+```mermaid
+graph LR
+    %% Node Definitions
+    App["Your App"]
+    Client["ZTeraDB NodeJS Client"]
+    Server["ZTeraDB Server"]
+    DB[("Your Databases")]
+
+    %% Pipeline Flow
+    App --> Client --> Server --> DB
+
+    %% Pro Developer Theme Styling (High Visibility)
+    style App fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a,font-weight:bold
+    style Client fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af,font-weight:bold
+    style Server fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px,color:#5b21b6,font-weight:bold
+    style DB fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46,font-weight:bold
+
+    %% Global Link Styling
+    linkStyle default stroke:#94a3b8,stroke-width:2px;
 ```
 
-## **Usage**
-```js
-// Import ZTeraDBConnect, ZTeraDBQuery classes 
-import {ZTeraDBConnect, ZTeraDBQuery} from 'zteradb';
+---
 
-// Get ZTeraDB Configuration from .env.
-const ZTERADB_CONFIG = JSON.parse(process.env.ZTERADB_CONFIG);
+## ⭐ Key Features
 
-// Establish connection with ZTeraDB server
-const connection = ZTeraDBConnect(ZTERADB_CONFIG, "db1.zteradb.com", 7777);
+*   🚀 **Unified Query Language (ZQL):** Write once, run on any database.
+*   🔌 **Easy Integration:** Seamlessly plugs into any Node.js application.
+*   ⚙️ **Auto-Managed Connections:** Handles connection pooling and automatic retries.
+*   🔐 **Secure Authentication:** Protected via client, access, and secret keys.
+*   🎯 **Clean Query Builder:** Fluent interface for standard CRUD operations (`insert`, `select`, `update`, `delete`).
+*   🔍 **Advanced Filtering:** Built-in support for complex logical and mathematical filters.
+*   🧵 **Streamed Results:** Efficiently memory-manages large datasets using Node.js generators.
+*   📦 **Modern Ecosystem:** Composer-ready and fully compatible with frameworks like Laravel, Symfony, and CodeIgniter.
 
-async function main() {
-  // Prepare select query
-  const query = ZTeraDBQuery("user").select();
+---
 
-  // Run the query
-  const result = await connection.run(query);
+## 🛠 Prerequisites & Requirements
 
-  // Iterate the result
-  for await (const row of result) {
-    console.log("Query result: ", row);
-  }
+| Requirement | Specification |
+| :--- | :--- |
+| **Node.js Version** | Node.js 18.20.7 or higher (Download from [nodejs.org](https://nodejs.org)) |
+| **Knowledge Base** | Familiarity with asynchronous JavaScript (Promises / Async-Await) |
+| **Credentials** | ZTeraDB account with active clientKeys |
 
-  // Close the connection
-  await connection.close();
+---
+
+## Installation
+
+### Option 1: Via npm (Recommended)
+Run the following command in your terminal to install the ZTeraDB client:
+
+```sh
+npm install zteradb
+```
+
+### Option 2: Via Yarn
+Alternatively, you can pull the package using yarn:
+
+```bash
+yarn add zteradb
+```
+
+---
+
+## 🧪 Running Tests
+To verify that your installation is working correctly and the client can communicate with your environment, you can run the test suite.
+
+1. Configure Environment Variables
+Create a `.env` file in your root directory (or export them to your environment):
+
+```bash
+ZTERADB_HOST=localhost
+ZTERADB_PORT=7777
+ZTERADB_CONFIG=your_config_string_here
+```
+
+2. Run the Test Scripts
+Execute the test suite using your preferred package manager:
+
+```javascript
+# Using npm
+npm test
+
+# Using yarn
+yarn test
+```
+
+---
+
+# 🚀 60-Second Quick Start
+
+```javascript
+import { ZTeraDBConnect, ZTeraDBQuery, ZTeradbConfig } from "zteradb/client"; // Or using commonJS: const { ZTeraDBConnect, ZTeraDBQuery, ZTeradbConfig } = require('zteradb/client');
+
+// 1. Setup Configuration
+const config = ZTeradbConfig(process.env.ZTERADB_CONFIG);
+
+// 2. Initialize Connection
+const db = ZTeraDBConnect(
+  config,
+  "<Your ZTeraDB HOST>",
+  7777
+);
+
+// 3. Build ZQL Query
+const query = new ZTeraDBQuery("user").select();
+
+// 4. Execute and Stream Results
+const users = await db.run(query);
+
+for await (const row of users) {
+  console.log(row);
 }
 
-main();
-
+// 5. Close Connection
+db.close();
 ```
 
-## **License**
+---
 
-This project is licensed under the **ZTeraDB** License - see [LICENCE](./LICENCE) file for details.
+## 🗂 Documentation Sections
+
+Explore the rest of our guides to unlock the full potential of ZTeraDB:
+
+*   🔐 [Configuration](./docs/config) — Learn all available configuration options.
+*   🔌 [Connection](./docs/zteradb-connection) — Deep dive into socket connections and lifecycle management.
+*   🔍 [Query Builder](./docs/zteradb-query) — Master building fluent ZQL queries.
+*   🎛️ [Filter Conditions](./docs/filter-condition) — Apply advanced math and logical filters to your data.
+*   🍳[Examples](./docs/query-examples) — Copy-pasteable snippets for common use cases.
+*   🛠 [Troubleshooting Guide](./docs/troubleshooting) — How to resolve common connection or runtime errors.
+*   🚀 [Quickstart Guide](./docs/quickstart) — A streamlined, 5-minute setup guide.
+*   🥇 [Licence](./LICENCE) — Open-source licence terms.
+
+---
+
+## **Licence**
+
+This project is licenced under the **ZTeraDB** Licence - see [LICENCE](./LICENCE) file for details.

@@ -1,87 +1,102 @@
 /**
- * @file delete-order.js
- * @description This script deletes an existing order from the ZTeraDB database.
- * The process consists of deleting the order from the `order` table based on a filter condition for a specific product ID.
+ * @file update-product.js
+ * 
+ * --------------------------------------------------------------------------
+ * ZTeraDB Client - Single Product Record Mutation Task
+ * --------------------------------------------------------------------------
+ * 
+ * @description
+ * Validates target connection environment configurations, opens 
+ * an isolated resource pool pipeline, modifies explicit collection indexes 
+ * conditionally, and disposes of internal connection states safely.
  *
  * @dependencies
- * - zteradb: A client library for interacting with ZTeraDB.
- * - environment variables for ZTeraDB connection settings (ZTERADB_HOST, ZTERADB_PORT, ZTeraDBConfig).
+ * - ./config.js
+ * - zteradb
  *
- * @async
- * @function deleteOrder
- * @returns {Promise<void>} 
- *   Executes the deletion process for the order in the database. Logs success or failure messages.
- *
- * @example
- * // Call the function to delete an order
- * deleteOrder();
- * 
- * @version 1.0.0
- * @author [ZTeraDB] <dev@zteradb.com>
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
- *
- * @note Ensure that the ZTeraDBClient and the necessary configuration (ZTeraDBConfig) are properly set up.
- * @note Ensure that the ZTERADB_HOST and ZTERADB_PORT are set in the environment.
+ * @package     zteradb.examples
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
-// Import config
-import ZTeraDBConfig from "./config.js";
+// Import config via CommonJS
+const ZTeraDBConfig = require("./config.js");
 
-// Import ZTeraDBConnection, ZTeraDBQuery from ZTeraDB client
-import { ZTeraDBConnection, ZTeraDBQuery } from "zteradb";
+// Import ZTeraDBConnection, ZTeraDBQuery from ZTeraDB client via CommonJS destructuring
+const { ZTeraDBConnection, ZTeraDBQuery } = require("zteradb");
 
-// Get ZTERADB_HOST and ZTERADB_PORT from environment
-const { ZTERADB_HOST: ZTeraDBHost, ZTERADB_PORT: ZTeraDBPort } = process.env;
-
-// Function to validate environment variables
-function validateEnvVars() {
-  if (!ZTeraDBHost || !ZTeraDBPort) {
-    throw new Error("Missing ZTeraDB host or port configuration in environment variables.");
+/**
+ * Validates infrastructure layer variables.
+ * @param {string} host - Database target cluster address.
+ * @param {string|number} port - Database operational port assignment.
+ * @throws {TypeError} If operational boundaries are missing or invalid.
+ */
+function validateNetworkConfig(host, port) {
+  if (!host || !port) {
+    throw new TypeError(
+      "Deployment Fault: ZTERADB_HOST or ZTERADB_PORT environment configuration is missing."
+    );
   }
 }
 
-// Function to construct the product query
-function updateProductQuery() {
+/**
+ * Constructs an absolute mutation schema query structure for a single item collection.
+ * @param {Object} filterCriteria - Key-value pair configuration targeting specific records.
+ * @param {Object} updateFields - Modified field configurations to apply to matching items.
+ * @returns {ZTeraDBQuery} Ready-to-evaluate database update transaction payload.
+ */
+function createUpdateProductQuery(filterCriteria, updateFields) {
   return new ZTeraDBQuery("product")
-    .update()  // Update query
-    .fields({ name: "Wireless Gaming Keyboard" })  // Set product name
-    .filter({ name: "Gaming Keyboard" });  // Filter for existing product
+    .update()
+    .fields(updateFields)
+    .filter(filterCriteria);
 }
 
-// Function to handle the insertion
-async function updateProduct() {
+/**
+ * Pipeline Orchestration Interface. Handles runtime context lifecycle operations,
+ * state validation, database mutations, and structural system cleanups.
+ */
+async function main() {
+  const host = process.env.ZTERADB_HOST;
+  const port = process.env.ZTERADB_PORT;
+  
+  const searchCriteria = { name: "Gaming Keyboard" };
+  const mutations = { name: "Wireless Gaming Keyboard" };
+
+  let connection = null;
+
   try {
-    // Validate environment variables
-    validateEnvVars();
+    validateNetworkConfig(host, port);
 
-    // Create ZTeraDB connection
-    const connection = new ZTeraDBConnection(ZTeraDBHost, ZTeraDBPort, ZTeraDBConfig);
+    connection = new ZTeraDBConnection(host, port, ZTeraDBConfig);
+    console.log("[INFO] Synchronization layer initialized. Compiling modification footprint...");
 
-    try {
-      // Construct the query
-      const productQuery = updateProductQuery();
+    const productQuery = createUpdateProductQuery(searchCriteria, mutations);
+    const result = await connection.run(productQuery);
 
-      // Run the query and handle the result
-      const result = await connection.run(productQuery);
-
-      if (result["is_updated"]) {
-        console.log("Product has been updated successfully.");
-      } else {
-        console.log("Product update failed.");
-      }
-    } catch (error) {
-      console.error("Error during query execution:", error);
-      throw error;
-    } finally {
-      // Ensure the connection is closed
-      connection.close();
+    // Evaluate database transaction wire-protocol acknowledgments
+    if (result?.is_updated) {
+      console.log(`[SUCCESS] Product records matching criteria updated successfully.`);
+    } else {
+      console.warn("[WARNING] Database transaction completed but zero document rows were altered:", result);
     }
+
   } catch (error) {
-    console.error("Error during user profile insertion:", error);
-    throw error;  // Rethrow the error
+    console.error("[FATAL] Transaction loop broken inside update script engine:", error.message);
+    process.exitCode = 1;
+  } finally {
+    if (connection && typeof connection.close === "function") {
+      try {
+        connection.close();
+        console.log("[INFO] Connection interface resource released safely.");
+      } catch (closeError) {
+        console.error("[ERROR] Failed to tear down underlying connection context:", closeError.message);
+      }
+    }
   }
 }
 
-// Call the updateProduct function
-updateProduct();
+// Initialize Product Update Runner Task
+main();

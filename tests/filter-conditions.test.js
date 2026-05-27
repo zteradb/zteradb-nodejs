@@ -1,15 +1,21 @@
 /**
  * @file filter-conditions.test.js
- * @description Unit tests for the filterConditions library. This file tests various filter condition operations 
+ * 
+ * --------------------------------------------------------------------------
+ * ZTeraDB Client - Filter Conditions Test
+ * --------------------------------------------------------------------------
+ * 
+ * @description
+ * Unit tests for the filterConditions library. This file tests various filter condition operations
  * such as Multiplication (ZTMUL), Substraction (ZTSUB), Divide (ZTDIV), Less Than (ZTLT), Less Than or Equal To (ZTLTE), Equal (ZTEQUAL), 
  * IN (ZTIN), and logical operators (AND/OR).
  * It also ensures proper error handling when invalid parameters are passed to the filter conditions.
- * 
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
- * 
+ *
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
+ *
  * Test cases include:
  * 1. Validating input types (e.g., ensuring arrays are passed where required).
  * 2. Testing expected results for different filter operations.
@@ -27,8 +33,8 @@
  * ```
  */
 // Import necessary modules and types
-import { ZTeraDBException } from "../src/index";
-import * as filterConditions from "../src/lib/zteradb-filter-conditions-functions";
+import { ZTeraDBException } from "@zteradb/client";
+import * as filterConditions from "@zteradb/client/query/zteradb-filter-conditions-functions";
 
 
 describe('filterConditions library tests', () => {

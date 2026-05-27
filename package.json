@@ -1,6 +1,6 @@
 {
-  "name": "zteradb",
-  "version": "1.0.5",
+  "name": "@zteradb/client",
+  "version": "2.0",
   "description": "ZTeraDB is a client library for Node.js development, providing classes to interact with ZTeraDB both in Node.js environments and web browsers.",
   "main": "src/index.js",
   "module": "src/index.mjs",
@@ -9,13 +9,41 @@
       "import": "./src/index.mjs",
       "require": "./src/index.js"
     },
+    "./config/*": {
+      "import": "./src/config/*.mjs",
+      "require": "./src/config/*.js"
+    },
     "./query": {
-      "import": "./src/lib/zteradb-query.mjs",
-      "require": "./src/lib/zteradb-query.js"
+      "import": "./src/query/zteradb-query.mjs",
+      "require": "./src/query/zteradb-query.js"
+    },
+    "./query/*": {
+      "import": "./src/query/*.mjs",
+      "require": "./src/query/*.js"
     },
     "./filter-conditions": {
-      "import": "./src/lib/zteradb-filter-conditions-functions.mjs",
-      "require": "./src/lib/zteradb-filter-conditions-functions.js"
+      "import": "./src/query/zteradb-filter-conditions-functions.mjs",
+      "require": "./src/query/zteradb-filter-conditions-functions.js"
+    },
+    "./connection/*": {
+      "import": "./src/connection/*.mjs",
+      "require": "./src/connection/*.js"
+    },
+    "./helper/*": {
+      "import": "./src/helper/*.mjs",
+      "require": "./src/helper/*.js"
+    },
+    "./constants/*": {
+      "import": "./src/constants/*.mjs",
+      "require": "./src/constants/*.js"
+    },
+    "./auth/*": {
+      "import": "./src/auth/*.mjs",
+      "require": "./src/auth/*.js"
+    },
+    "./protocol/*": {
+      "import": "./src/protocol/*.mjs",
+      "require": "./src/protocol/*.js"
     }
   },
   "scripts": {
@@ -52,7 +80,8 @@
     "meta-buffer-pack": "^2.0.4",
     "net": "latest",
     "struct": "^0.0.12",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "zteradb": "^1.0.5"
   },
   "publishConfig": {
     "access": "restricted"

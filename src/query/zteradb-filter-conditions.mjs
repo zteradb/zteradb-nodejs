@@ -1,12 +1,12 @@
 /**
- * @file filter-conditions.js
+ * @file query/zteradb-filter-conditions.mjs
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB Filter Condition Class
+ * --------------------------------------------------------------------------
  * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
- * 
- * @description This file defines the `FilterCondition` class which provides methods for creating and managing 
+ * @description
+ * This file defines the `FilterCondition` class which provides methods for creating and managing 
  * various filter conditions (such as equality, inclusion, pattern matching, etc.) that can be applied to data.
  * The class supports a variety of operators (e.g., ADD, SUB, MUL, DIV, IN, EQUAL, etc.) for constructing complex queries.
  * 
@@ -17,17 +17,18 @@
  * @example
  *   const filter = new FilterCondition().setEqualFilter("field1", "value1");
  * 
- * @class FilterCondition
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @class       FilterCondition
+ * @package     zteradb.query
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 
 // Importing necessary classes and constants
-const ZTeraDBConditionError = require("../helper/zteradb-exception"); // ZTERADB error handling
-const FilterTypes = require("../constants/zteradb-filter-types"); // Import ZTERADB filter operators like ADD, SUB, etc.
+import { ZTeraDBConditionError } from "@zteradb/client/helper/zteradb-exception";  // ZTERADB error handling
+import FilterTypes from "@zteradb/client/constants/zteradb-filter-types";  // Import ZTERADB filter operators like ADD, SUB, etc.
 
 /**
  * Abstract base class representing a common condition.
@@ -177,7 +178,7 @@ class CommonCondition {
  * Represents a group of filter conditions that can be applied to fields for the query.
  * This class extends the CommonCondition class and provides specific filter operations.
  */
-class FilterCondition extends CommonCondition {
+export class FilterCondition extends CommonCondition {
   constructor() {
     super();  // Call the parent class constructor
   }
@@ -609,5 +610,3 @@ class FilterCondition extends CommonCondition {
     return this;
   }
 }
-
-module.exports = { FilterCondition };

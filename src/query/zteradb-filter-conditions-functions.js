@@ -1,10 +1,9 @@
 /**
- * @file filter-functions.js
+ * @file query/zteradb-filter-conditions-functions.js
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB Filter Condition Functions
+ * --------------------------------------------------------------------------
  * 
  * @description This file defines a set of helper functions that interact with the `FilterCondition` class to 
  * generate specific filter conditions for various operations (e.g., ADD, SUB, MUL, DIV, EQUAL, IN, etc.).
@@ -31,15 +30,15 @@
  *    filter condition is stored in the variable `filter`.
  * 
  * 
- * @class ZTeraDBQuery
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @package     zteradb.query
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 // Importing filter-conditions.js
-const FilterCondition = require("./zteradb-filter-conditions");
+const { FilterCondition } = require("../query/zteradb-filter-conditions");
 
 
 /**
@@ -328,7 +327,7 @@ module.exports = {
   ZTEQUAL,        // Export ZTEQUAL for equal of two fields / values
   ZTIN,           // Export ZTIN for field lookup
   ZTADD,          // Export ZTADD for addition of two or more fields
-  ZTSUB,          // Export ZTDUB for substraction of two or more fields
+  ZTSUB,          // Export ZTSUB for substraction of two or more fields
   ZTMUL,          // Export ZTMUL for multiplication of two or more fields
   ZTDIV,          // Export ZTDIV for division of two fields
   ZTMOD,          // Export ZTMOD for modulo of two fields

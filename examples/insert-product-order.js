@@ -1,144 +1,151 @@
 /**
- * insert_product_order.js
+ * @file insert-product-order.js
  * 
- * This script is responsible for inserting products and orders into the ZTeraDB database. 
- * It first validates the necessary environment variables, then proceeds to insert a list of 
- * products and their associated orders. The script uses async/await for handling asynchronous 
- * operations and ensures that the database connection is properly managed.
+ * --------------------------------------------------------------------------
+ * ZTeraDB Client - Bulk Product & Order Ingestion Task
+ * --------------------------------------------------------------------------
+ * 
+ * @description
+ * Validates environmental variables, establishes an operational 
+ * connection pipeline, provisions mock records concurrently, maps generated 
+ * relational foreign keys, and safely releases internal network pools.
  *
  * @dependencies
- * - zteradb: A client library for interacting with ZTeraDB.
- * - environment variables for ZTearDB connection settings (ZTERADB_HOST, ZTERADB_PORT, ZTeraDBConfig).
+ * - ./config.js
+ * - zteradb
  *
- * Environment Variables:
- * - ZTERADB_HOST: The host address for the ZTeraDB database.
- * - ZTERADB_PORT: The port for the ZTeraDB database connection.
- *
- * Example Usage:
- * - Ensure that ZTERADB_HOST and ZTERADB_PORT are set in your environment.
- * - Execute this file using Node.js.
- * 
- * @version 1.0.0
- * @author [ZTeraDB] <dev@zteradb.com>
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
- * 
- * @note Ensure that the ZTeraDBClient and the necessary configuration (ZTeraDBConfig) are properly set up.
- * @note Ensure that the environment variables ZTERADB_HOST and ZTERADB_PORT are properly set before running.
+ * @package     zteradb.examples
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
-// Import config and necessary modules from ZTeraDB client
-import ZTeraDBConfig from "./config.js";
-import { ZTeraDBConnection, ZTeraDBQuery } from "zteradb";
+// Import config via CommonJS
+const ZTeraDBConfig = require("./config.js");
 
-// Get ZTeraDB connection details from environment variables
-const ZTeraDBHost = process.env.ZTERADB_HOST;
-const ZTeraDBPort = process.env.ZTERADB_PORT;
+// Import ZTeraDBConnection, ZTeraDBQuery from ZTeraDB client via CommonJS destructuring
+const { ZTeraDBConnection, ZTeraDBQuery } = require("zteradb");
 
-// Static user ID, to be passed from an external source (like insert_user_profile.js)
-const userId = 1; // Assuming you have run the insert-user-profile.js
+// --- Operational Seed Data Configuration ---
+const SEED_USER_ID = 1;
 
-// Example product and order data
-const products = [
+const MOCK_PRODUCTS = [
   { name: "Wireless Mouse", description: "Ergonomic wireless mouse with USB receiver", quantity: 120, price: 1999, create_date: "2025-02-01 10:00:00", update_date: "2025-02-01 10:00:00", status: "A" },
-  { name: "Bluetooth Headphones", description: "Noise-canceling over-ear Bluetooth headphones", quantity: 50, price: 5999, create_date: "2025-02-02 14:30:00", update_date: "2025-02-02 14:30:00", status: "A" },
-  // Other products...
+  { name: "Bluetooth Headphones", description: "Noise-canceling over-ear Bluetooth headphones", quantity: 50, price: 5999, create_date: "2025-02-02 14:30:00", update_date: "2025-02-02 14:30:00", status: "A" }
 ];
 
-const orders = [
+const MOCK_ORDERS = [
   { create_date: "2025-02-21 10:00:00", update_date: "2025-02-21 10:00:00", status: "A" },
-  { create_date: "2025-02-21 12:00:00", update_date: "2025-02-21 12:30:00", status: "NA" },
-  // Other orders...
+  { create_date: "2025-02-21 12:00:00", update_date: "2025-02-21 12:30:00", status: "NA" }
 ];
 
 /**
- * Function to validate if the required environment variables are set
+ * Validates infrastructure layer variables.
+ * @param {string} host - Database target cluster address.
+ * @param {string|number} port - Database operational port assignment.
+ * @throws {TypeError} If operational boundaries are missing or invalid.
  */
-const validateEnvVariables = () => {
-  if (!ZTeraDBHost || !ZTeraDBPort) {
-    throw new Error("Missing ZTeraDB host or port configuration in environment variables.");
-  }
-};
-
-/**
- * Function to run a query and return the last inserted ID
- * @param {ZTeraDBConnection} connection - The active database connection
- * @param {ZTeraDBQuery} query - The query object
- * @returns {Promise<number>} - The last inserted ID
- */
-const runQuery = async (connection, query) => {
-  try {
-    const result = await connection.run(query);
-    return result.last_insert_id;
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-};
-
-/**
- * Function to insert products into the database
- * @param {ZTeraDBConnection} connection - The active database connection
- * @returns {Promise<number[]>} - The list of inserted product IDs
- */
-const insertProducts = async (connection) => {
-  return Promise.all(
-    products.map((product) => {
-      const productQuery = new ZTeraDBQuery("product")
-        .insert()
-        .fields({ ...product });
-
-      return runQuery(connection, productQuery);
-    })
-  );
-};
-
-/**
- * Function to insert orders into the database for a specific user and product IDs
- * @param {ZTeraDBConnection} connection - The active database connection
- * @param {number[]} productIds - The product IDs to associate with the orders
- * @returns {Promise<number[]>} - The list of inserted order IDs
- */
-const insertOrders = async (connection, productIds) => {
-  return Promise.all(
-    orders.map((order, index) => {
-      order.user = userId;
-      order.product = productIds[index];
-
-      const orderQuery = new ZTeraDBQuery("order")
-        .insert()
-        .fields({ ...order });
-
-      return runQuery(connection, orderQuery);
-    })
-  );
-};
-
-/**
- * Main function to insert products and orders into the database
- */
-async function insertProductOrder() {
-  // Validate the required environment variables
-  validateEnvVariables();
-
-  // Create ZTeraDB connection
-  const connection = new ZTeraDBConnection(ZTeraDBHost, ZTeraDBPort, ZTeraDBConfig);
-
-  try {
-    // Insert products into the database
-    const productIds = await insertProducts(connection);
-    console.log("Product IDs inserted:", productIds);
-
-    // Insert orders using the product IDs
-    const orderIds = await insertOrders(connection, productIds);
-    console.log("Order IDs inserted:", orderIds);
-  } catch (error) {
-    console.error("Error during product and order insertion:", error);
-  } finally {
-    // Close the database connection after processing
-    connection.close();
+function validateNetworkConfig(host, port) {
+  if (!host || !port) {
+    throw new TypeError(
+      "Deployment Fault: ZTERADB_HOST or ZTERADB_PORT environment configuration is missing."
+    );
   }
 }
 
-// Call the main function to insert products and orders
-insertProductOrder();
+/**
+ * Evaluates a single query construct and yields the database-generated sequence key.
+ * @param {ZTeraDBConnection} connection - Active transaction node cluster link.
+ * @param {ZTeraDBQuery} query - Formatted payload execution unit.
+ * @returns {Promise<number|string>} Remote target last record instance identifier.
+ */
+async function executeInsertQuery(connection, query) {
+  try {
+    const result = await connection.run(query);
+    return result?.last_insert_id;
+  } catch (error) {
+    console.error(`[ERROR] Driver structural evaluation failure:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Executes concurrent entry persistence arrays across data payloads.
+ * @param {ZTeraDBConnection} connection - Active cluster pipe abstraction.
+ * @param {Array<Object>} dataset - List of records to queue.
+ * @returns {Promise<Array<number|string>>} Map array containing newly generated document identifiers.
+ */
+async function ingestProducts(connection, dataset) {
+  return Promise.all(
+    dataset.map((product) => {
+      const query = new ZTeraDBQuery("product").insert().fields(product);
+      return executeInsertQuery(connection, query);
+    })
+  );
+}
+
+/**
+ * Pairs active identifiers with core entries and commits mapped dependency records.
+ * @param {ZTeraDBConnection} connection - Active cluster pipe abstraction.
+ * @param {Array<Object>} dataset - Structural tracking items array.
+ * @param {Array<number|string>} productIds - Upstream sequence identifiers.
+ * @param {number|string} userId - Reference actor identity parameter.
+ * @returns {Promise<Array<number|string>>} Result identity collections mapping.
+ */
+async function ingestOrders(connection, dataset, productIds, userId) {
+  return Promise.all(
+    dataset.map((order, index) => {
+      const singleOrder = {
+        ...order,
+        user: userId,
+        product: productIds[index] || null
+      };
+
+      const query = new ZTeraDBQuery("order").insert().fields(singleOrder);
+      return executeInsertQuery(connection, query);
+    })
+  );
+}
+
+/**
+ * System Orchestration Entry Point. Coordinates transaction flow control patterns 
+ * and handles infrastructure isolation layers safely.
+ */
+async function main() {
+  const host = process.env.ZTERADB_HOST;
+  const port = process.env.ZTERADB_PORT;
+  
+  let connection = null;
+
+  try {
+    validateNetworkConfig(host, port);
+
+    connection = new ZTeraDBConnection(host, port, ZTeraDBConfig);
+    console.log("[INFO] Synchronization layer initialized. Executing records ingestion...");
+
+    // Phase 1: Products Batch Operations Commitment
+    const insertedProductIds = await ingestProducts(connection, MOCK_PRODUCTS);
+    console.log(`[SUCCESS] Products provisioned securely. Associated IDs:`, insertedProductIds);
+
+    // Phase 2: Relational Orders Assignment Mapping
+    const insertedOrderIds = await ingestOrders(connection, MOCK_ORDERS, insertedProductIds, SEED_USER_ID);
+    console.log(`[SUCCESS] Dependent orders bound cleanly. Associated IDs:`, insertedOrderIds);
+
+  } catch (error) {
+    console.error(`[FATAL] Transaction loop broke inside seeding task:`, error.message);
+    process.exitCode = 1;
+  } finally {
+    if (connection && typeof connection.close === "function") {
+      try {
+        connection.close();
+        console.log("[INFO] Connection interface resource released safely.");
+      } catch (closeError) {
+        console.error("[ERROR] Failed to tear down underlying connection context:", closeError.message);
+      }
+    }
+  }
+}
+
+// Initialize Batch Life Cycle Engine
+main();

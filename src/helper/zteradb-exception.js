@@ -1,10 +1,9 @@
 /**
- * @file filter-functions.js
+ * @file helper/zteradb-exception.js
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB Exception functions
+ * --------------------------------------------------------------------------
  *
  * @description This file contains two custom error classes:
  *                - AuthenticationError: Used for handling authentication-related errors, with custom error codes and details.
@@ -13,18 +12,18 @@
  * @Dependencies
  *  - None
  * 
- * Example Usage:
- * 
+ * @example:
  *  const authError = new AuthenticationError('Invalid credentials', '9', "An error occurred while authenticating the user. Please check credentials.");
  *  console.log(authError.message); // Output: 'Invalid credentials'
  * 
  *  const dbError = new ZTeraDBError('ZTeraDB connection failed', -1, 'An error occurred while connecting to ZteraDB. Please check network connection.');
  *  console.log(dbError.message); // Output: 'Database connection failed'
  *
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @package     zteradb.helper
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 // Custom AuthenticationError class to represent authentication-specific errors

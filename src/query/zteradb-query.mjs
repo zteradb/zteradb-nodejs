@@ -1,10 +1,9 @@
 /**
- * @file ZTeraDBQuery.js
+ * @file query/zteradb-query.mjs
  * 
- * Copyright (c) 2025 ZTeraDB
- * All rights reserved.
- * 
- * Licensed under the ZTeraDB License. See LICENSE file for details.
+ * --------------------------------------------------------------------------
+ *  ZTeraDB Query Class
+ * --------------------------------------------------------------------------
  * 
  * @description 
  * This file contains the definition of the `ZTeraDBQuery` class, which provides a fluent API for constructing ZTeraDB queries.
@@ -57,21 +56,22 @@
  * - The `limit()` method is used to specify a range of rows for the query result.
  * - The `generate()` method outputs the final query object that can be passed to the database execution engine.
  * 
- * @class ZTeraDBQuery
- * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @class       ZTeraDBQuery
+ * @package     zteradb.query
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
 
 
-const { FilterCondition } = require("./zteradb-filter-conditions");
-const { ZTeraDBQueryError } = require("../helper/zteradb-exception");
-const FilterTypes = require("../constants/zteradb-filter-types");
+import { FilterCondition } from "@zteradb/client/query/zteradb-filter-conditions";
+import { ZTeraDBQueryError } from "@zteradb/client/helper/zteradb-exception";
+import FilterTypes from "@zteradb/client/constants/zteradb-filter-types";
 
 
 // Enumeration for different query types (INSERT, SELECT, UPDATE, DELETE)
-const QueryType = Object.freeze({
+export const QueryType = Object.freeze({
   INSERT: 0X1,  // Insert operation
   SELECT: 0X2,  // Select operation
   UPDATE: 0X3,  // Update operation
@@ -79,7 +79,7 @@ const QueryType = Object.freeze({
 });
 
 // Enumeration for sorting order (ascending and descending)
-const Sort = Object.freeze({
+export const Sort = Object.freeze({
   ASE: 1, // Ascending order
   DESC: -1, // Descending order
 });
@@ -112,7 +112,7 @@ const excludeProps = [
  * isValidSchemaField('field_1');  // returns true
  * isValidSchemaField('field#1');  // returns false
  */
-function isValidSchemaField(str) {
+export function isValidSchemaField(str) {
   const regex = /^[a-zA-Z0-9_]+$/;
   return regex.test(str);
 }
@@ -126,7 +126,7 @@ function isValidSchemaField(str) {
  */
 class ZTeraDBQuery {
   // Initialize the main properties of the query
-  databaseID = "";     // Database identifier, optional for zteradb connection queries
+  databaseID = "";     // Database identifier, optional for ZTeraDB connection queries
   schemaName = "";       // Schema name
   _queryType = "";        // Type of the query (INSERT, SELECT, UPDATE, DELETE)
   _fields = {};           // Fields to be selected or affected by the query (e.g., Schema field names)
@@ -254,15 +254,6 @@ class ZTeraDBQuery {
       }
     }
 
-
-    // for (let param in params) {
-    //   if(params[param] instanceof Array) {
-    //     let rf_query_list = params[param];
-    //   }
-    //   else if(params[param] instanceof ZTeraDBQuery) {
-    //     this._relatedFields[param] = params[param].generate();
-    //   }
-    // }
     return this;  // Return the instance for method chaining
   }
 
@@ -438,5 +429,4 @@ class ZTeraDBQuery {
   }
 }
 
-module.exports = { isValidSchemaField, QueryType, Sort};
-module.exports.ZTeraDBQuery = ZTeraDBQuery;
+export default ZTeraDBQuery;

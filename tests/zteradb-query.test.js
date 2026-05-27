@@ -19,7 +19,7 @@
  * 3. The query builder can handle large or complex datasets efficiently.
  * 
  * @author [ZTeraDB] <dev@zteradb.com>
- * @version 1.0.0
+ * @version 2.0
  * @license [ZTeraDB]
  * @see [https://zteradb.com/licence]
  * 
@@ -37,7 +37,7 @@
  * ```
  */
 // Import necessary modules and types
-import ZTeraDBQuery, {QueryType, Sort} from "../src/lib/zteradb-query";
+import ZTeraDBQuery, {QueryType, Sort} from "../src/query/zteradb-query";
 import { ZTeraDBException } from "../src/index";
 
 describe('ZTeraDBQuery', () => {

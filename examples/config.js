@@ -1,27 +1,26 @@
 /**
- * ZTeraDB Configuration File
+ * @file zteradb-config.js
+ *
+ * --------------------------------------------------------------------------
+ * ZTeraDB Client Configuration Instance
+ * --------------------------------------------------------------------------
  * 
- * This file contains the configuration settings for connecting to the ZTeraDB instance.
- * It retrieves necessary credentials (client key, access key, secret key, database ID)
- * from environment variables. It also configures the connection pool settings and
- * specifies the response data format (JSON).
- * 
- * Environment variables used:
- * - CLIENT_KEY: The key used for client authentication.
- * - ACCESS_KEY: The access key for accessing the database.
- * - SECRET_KEY: The secret key for securing the connection.
- * - DATABASE_ID: The unique identifier for the database.
- * - ZTERADB_ENV: The environment setting (e.g., production or development).
- * - MIN_CONNECTION: The minimum number of database connections in the pool (optional).
- * - MAX_CONNECTION: The maximum number of database connections in the pool (optional).
- * 
- * This configuration is exported for use in other parts of the application.
- * 
- * @version 1.0.0
- * @author [ZTeraDB] <dev@zteradb.com>
- * @license [ZTeraDB]
- * @see [https://zteradb.com/licence]
+ * @description
+ * Constructs and exports the default configuration object required 
+ * to initialize a ZTeraDB client instance, parsing variables 
+ * directly from the environment environment context.
+ *
+ * @dependencies 
+ * - ../src/constants/zteradb-response-data-types.mjs
+ *
+ * @package     zteradb.config
+ * @author      [ZTeraDB] <dev@zteradb.com>
+ * @version     2.0
+ * @license     [ZTeraDB]
+ * @license     https://zteradb.com/licence   (SPDX-License-Identifier: Proprietary)
  */
+
+import ResponseDataTypes from "@zteradb/client/constants/zteradb-response-data-types";
 
 // Configuring the ZTeraDB connection with necessary credentials and options
 const ZTeraDBConfig = {
@@ -39,9 +38,12 @@ const ZTeraDBConfig = {
   
   // Environment setting (e.g., production, development) for the ZTeraDB instance
   env: process.env.ZTERADB_ENV,
+
+  use_tls: (process.env.USE_TLS === "true") ? true: false,
+  verify_tls_host: (process.env.VERIFY_TLS_HOST === "true") ? true: false,
   
   // Defining the response format for the database (JSON in this case)
-  responseDataType: "json",
+  responseDataType: ResponseDataTypes.JSON,
   
   // Options for configuring the connection pool
   options: {
