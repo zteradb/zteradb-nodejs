@@ -87,7 +87,7 @@ The Node package manager registry engine has an un-synchronized tracking index, 
 1. Force-register the package module dependencies directly inside your local execution tree:
 
     ```bash
-    npm install zteradb
+    npm install @zteradb/client
     ```
 
 2. For highly persistent module tree discrepancies, execute a clean tracking reinitialization sequence:

@@ -38,14 +38,14 @@ Welcome to ZTeraDB! This guide is engineered for developers who want to integrat
 Run the following command in your terminal to install the ZTeraDB client:
 
 ```sh
-npm install zteradb
+npm install @zteradb/client
 ```
 
 ### Option 2: Via Yarn
 Alternatively, you can pull the package using yarn:
 
 ```bash
-yarn add zteradb
+yarn add @zteradb/client
 ```
 
 ---
