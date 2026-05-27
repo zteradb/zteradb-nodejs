@@ -1,6 +1,6 @@
 {
   "name": "@zteradb/client",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "ZTeraDB is a client library for Node.js development, providing classes to interact with ZTeraDB both in Node.js environments and web browsers.",
   "main": "src/index.js",
   "module": "src/index.mjs",
